@@ -25,8 +25,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 }) => {
   // Compute Dynamic Metrics
   const inWorkshopCount = equipment.filter((eq) => eq.status === 'In Workshop').length;
-  const deployedCount = equipment.filter((eq) => eq.status === 'Deployed').length;
-  const overduePMCount = equipment.filter((eq) => eq.status === 'Overdue PM').length;
+  const deployedCount = equipment.filter((eq) => eq.status === 'Operational').length;
+  const overduePMCount = equipment.filter((eq) => eq.status === 'Under Maintenance').length;
 
   const totalFleetUnits = 1230 + equipment.length;
   const totalDeployedUnits = 1172 + deployedCount;
@@ -43,7 +43,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const siteItems = Object.keys(siteBreakdown).map((site) => ({
     name: site,
     count: siteBreakdown[site],
-    deployed: equipment.filter((eq) => eq.site === site && eq.status === 'Deployed').length,
+    deployed: equipment.filter((eq) => eq.site === site && eq.status === 'Operational').length,
     workshop: equipment.filter((eq) => eq.site === site && eq.status === 'In Workshop').length,
   }));
 

@@ -230,7 +230,7 @@ a:hover {
 }
 
 /* Global button systems */
-.btn {
+.btn, .btn-primary, .btn-secondary, .btn-danger {
   display: inline-flex;
   align-items: center;
   justify-content: center;

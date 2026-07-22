@@ -1,16 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, Plus, Sun, Moon, LogOut, Settings, User } from 'lucide-react';
+import { Bell, Sun, Moon, LogOut, Settings, User } from 'lucide-react';
+import type { PMAlert } from '../types';
+import { PMAlertsNotificationCenter } from './PMAlertsNotificationCenter';
 
 interface NavbarProps {
   theme: 'light' | 'dark';
   toggleTheme: () => void;
+  alerts: PMAlert[];
+  onGenerateJob: (alert: PMAlert) => void;
+  onSnooze: (alertId: string) => void;
+  onMarkRead: (alertId: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   theme,
   toggleTheme,
+  alerts,
+  onGenerateJob,
+  onSnooze,
+  onMarkRead
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showAlertsMenu, setShowAlertsMenu] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,69 +36,43 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="navbar">
-      {/* Left: Vibrant Green Logo and Platform Title */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{
-          background: 'var(--primary)',
-          color: 'white',
-          fontWeight: 800,
-          fontSize: '13px',
-          padding: '6px 12px',
-          borderRadius: 'var(--radius-sm)',
-          letterSpacing: '1px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px'
-        }}>
-          <span>GREECOLOR</span>
-          <span style={{ opacity: 0.7, fontSize: '10px' }}>/</span>
-          <span>OEMMS</span>
-        </div>
-        <h1 style={{ fontSize: '14.5px', fontWeight: 700, margin: 0, letterSpacing: '-0.3px', color: 'var(--text-title)' }}>
-          Enterprise Asset Command
-        </h1>
+      {/* Left: Branding */}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <img src="/logo.png" alt="International DRILL EX Logo" style={{ height: '42px', objectFit: 'contain' }} />
       </div>
 
-      {/* Middle: Global Search Bar Placeholder */}
+      {/* Middle: Removed for cleaner layout */}
       <div className="navbar-left" style={{ margin: '0 24px' }}>
-        <div className="search-container">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search Equipment, Serial #, Job #... [Ctrl+K]"
-            disabled
-            style={{ cursor: 'not-allowed', background: 'var(--bg-main)', opacity: 0.8 }}
-          />
-          <Search size={16} className="search-icon" />
-          <span className="search-shortcut" style={{ top: '50%', transform: 'translateY(-50%)' }}>Ctrl+K</span>
-        </div>
       </div>
 
       {/* Right: Actions, Bell, Theme and Profile Dropdown */}
       <div className="navbar-right">
-        {/* Quick Action Buttons (Static layout placeholders) */}
-        <div className="nav-actions">
-          <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '12.5px', cursor: 'default' }} disabled>
-            <Plus size={14} />
-            <span>Receive Equipment</span>
-          </button>
-          <button className="btn btn-primary" style={{ padding: '6px 12px', fontSize: '12.5px', cursor: 'default' }} disabled>
-            <Plus size={14} />
-            <span>New Job</span>
-          </button>
-        </div>
 
         {/* Theme Toggle */}
         <button className="btn-icon-only" onClick={toggleTheme} title="Toggle Theme">
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        {/* Notification Bell (Static layout representation with indicator badge) */}
-        <div className="notifications-btn" style={{ cursor: 'default' }}>
-          <button className="btn-icon-only" style={{ cursor: 'default' }}>
+        {/* Notification Bell */}
+        <div className="notifications-btn relative" style={{ cursor: 'pointer' }}>
+          <button className="btn-icon-only" onClick={() => setShowAlertsMenu(!showAlertsMenu)}>
             <Bell size={18} />
-            <span className="badge-dot" style={{ top: '4px', right: '4px' }} />
+            {alerts.filter(a => !a.readStatus).length > 0 && (
+              <span className="badge-dot" style={{ top: '4px', right: '4px', background: 'var(--status-overdue-bg)' }} />
+            )}
           </button>
+          
+          <PMAlertsNotificationCenter 
+            isOpen={showAlertsMenu}
+            onClose={() => setShowAlertsMenu(false)}
+            alerts={alerts}
+            onGenerateJob={(alert) => {
+              onGenerateJob(alert);
+              setShowAlertsMenu(false);
+            }}
+            onSnooze={onSnooze}
+            onMarkRead={onMarkRead}
+          />
         </div>
 
         {/* User Profile Dropdown */}
