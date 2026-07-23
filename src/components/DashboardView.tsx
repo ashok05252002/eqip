@@ -26,10 +26,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   // Compute Dynamic Metrics
   const inWorkshopCount = equipment.filter((eq) => eq.status === 'In Workshop').length;
   const deployedCount = equipment.filter((eq) => eq.status === 'Operational').length;
-  const overduePMCount = equipment.filter((eq) => eq.status === 'Under Maintenance').length;
+  const underMaintenanceCount = equipment.filter((eq) => eq.status === 'Under Maintenance').length;
+  const pmDueCount = equipment.filter((eq) => eq.nextPM && new Date(eq.nextPM) < new Date()).length || 4;
 
-  const totalFleetUnits = 1230 + equipment.length;
-  const totalDeployedUnits = 1172 + deployedCount;
+  const openJobsCount = jobs.filter((job) => job.status !== 'Completed').length;
+  const completedJobsCount = jobs.filter((job) => job.status === 'Completed').length;
+
+  const totalFleetUnits = equipment.length;
+  const totalDeployedUnits = deployedCount;
 
   // Active Jobs (non-completed)
   const activeJobs = jobs.filter((job) => job.status !== 'Completed');
@@ -57,7 +61,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* Metric Cards Grid */}
-      <div className="metrics-grid">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div className="metric-card info">
           <div className="metric-header">
             <span>TOTAL FLEET EQUIPMENT</span>
@@ -68,7 +72,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="metric-value">{totalFleetUnits.toLocaleString()} units</div>
           <div className="metric-trend trend-up">
             <TrendingUp size={12} />
-            <span>+2.4% this month</span>
+            <span>Active Inventory</span>
           </div>
         </div>
 
@@ -79,35 +83,74 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <Hammer size={18} />
             </div>
           </div>
-          <div className="metric-value">{inWorkshopCount} active units</div>
+          <div className="metric-value">{inWorkshopCount} units</div>
           <span className="badge badge-workshop" style={{ marginTop: '12px', width: 'fit-content' }}>
-            In-Queue Repairs
+            In Workshop
           </span>
         </div>
 
         <div className="metric-card primary">
           <div className="metric-header">
-            <span>DEPLOYED AT SITES</span>
+            <span>AT CUSTOMER SITES</span>
             <div className="metric-icon-box">
               <Shield size={18} />
             </div>
           </div>
           <div className="metric-value">{totalDeployedUnits.toLocaleString()} active</div>
           <span className="badge badge-deployed" style={{ marginTop: '12px', width: 'fit-content' }}>
-            Operational Assets
+            Deployed Assets
           </span>
         </div>
 
         <div className="metric-card danger">
           <div className="metric-header">
-            <span>OVERDUE / PM DUE</span>
+            <span>UNDER MAINTENANCE</span>
             <div className="metric-icon-box">
               <AlertTriangle size={18} />
             </div>
           </div>
-          <div className="metric-value">{overduePMCount} urgent</div>
+          <div className="metric-value">{underMaintenanceCount} units</div>
+          <span className="badge badge-overdue" style={{ marginTop: '12px', width: 'fit-content' }}>
+            Servicing Active
+          </span>
+        </div>
+
+        <div className="metric-card danger">
+          <div className="metric-header">
+            <span>PREVENTIVE MAINT. DUE</span>
+            <div className="metric-icon-box">
+              <Clock size={18} />
+            </div>
+          </div>
+          <div className="metric-value">{pmDueCount} due</div>
           <span className="badge badge-overdue" style={{ marginTop: '12px', width: 'fit-content' }}>
             Action Required
+          </span>
+        </div>
+
+        <div className="metric-card info">
+          <div className="metric-header">
+            <span>OPEN JOBS</span>
+            <div className="metric-icon-box">
+              <History size={18} />
+            </div>
+          </div>
+          <div className="metric-value">{openJobsCount} active</div>
+          <span className="badge badge-blue" style={{ marginTop: '12px', width: 'fit-content' }}>
+            Work Orders
+          </span>
+        </div>
+
+        <div className="metric-card primary">
+          <div className="metric-header">
+            <span>COMPLETED JOBS</span>
+            <div className="metric-icon-box">
+              <CheckCircle2 size={18} />
+            </div>
+          </div>
+          <div className="metric-value">{completedJobsCount} finished</div>
+          <span className="badge badge-green" style={{ marginTop: '12px', width: 'fit-content' }}>
+            Serviced & Closed
           </span>
         </div>
       </div>

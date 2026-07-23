@@ -146,15 +146,26 @@ export const ReceivingWizardModal: React.FC<ReceivingWizardModalProps> = ({ onCl
                   ></textarea>
                 </div>
 
-                <div className="form-group">
-                  <label>Arrival Condition Matrix</label>
-                  <div className="grid grid-cols-2 gap-3 mt-2">
-                    {['External Damage', 'Fluid Leaks', 'Missing Components', 'Normal Wear'].map(condition => (
-                      <label key={condition} className="flex items-center gap-3 p-3 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                        <input type="checkbox" className="w-4 h-4 text-primary rounded border-slate-300 focus:ring-primary" />
-                        <span className="text-sm font-medium">{condition}</span>
-                      </label>
-                    ))}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="form-group">
+                    <label>Overall Condition upon Arrival</label>
+                    <select className="form-input w-full" defaultValue="Minor Damage">
+                      <option>Operational / Good</option>
+                      <option>Minor Damage</option>
+                      <option>Severe Breakdown</option>
+                      <option>Non-Operational / Scrap</option>
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Arrival Physical Checklist</label>
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                      {['External Damage', 'Fluid Leaks', 'Missing Components', 'Normal Wear'].map(condition => (
+                        <label key={condition} className="flex items-center gap-2 p-2 border border-slate-200 dark:border-slate-700 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-medium">
+                          <input type="checkbox" className="w-3.5 h-3.5 text-primary rounded border-slate-300 focus:ring-primary" />
+                          <span>{condition}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
 

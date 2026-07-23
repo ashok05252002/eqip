@@ -79,8 +79,12 @@ export const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ 
                 <input type="text" placeholder="Enter Serial #" className="form-input" />
               </div>
               <div className="form-group">
-                <label>Engine / Chassis #</label>
-                <input type="text" placeholder="Enter Engine/Chassis #" className="form-input" />
+                <label>Engine Number (if applicable)</label>
+                <input type="text" placeholder="e.g. ENG-883921" className="form-input" />
+              </div>
+              <div className="form-group col-span-2">
+                <label>Chassis Number (if applicable)</label>
+                <input type="text" placeholder="e.g. CHS-992102" className="form-input" />
               </div>
             </div>
           )}
@@ -89,7 +93,7 @@ export const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ 
             <div className="form-grid fade-in">
               <div className="form-group">
                 <label>Manufacturing Year</label>
-                <input type="number" placeholder="YYYY" className="form-input" />
+                <input type="number" placeholder="YYYY" defaultValue={2022} className="form-input" />
               </div>
               <div className="form-group">
                 <label>Purchase Date</label>
@@ -98,6 +102,10 @@ export const RegisterEquipmentModal: React.FC<RegisterEquipmentModalProps> = ({ 
               <div className="form-group">
                 <label>Warranty Expiry Date</label>
                 <input type="date" className="form-input" />
+              </div>
+              <div className="form-group col-span-2">
+                <label>Warranty Terms & Coverage Details</label>
+                <textarea placeholder="Enter manufacturer warranty details..." className="form-input text-sm resize-y" rows={2} />
               </div>
               <div className="form-group">
                 <label>Assigned Customer</label>

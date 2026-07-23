@@ -32,6 +32,7 @@ export const ReportsAnalyticsHubView: React.FC<ReportsAnalyticsHubViewProps> = (
 
   const [customerFilter, setCustomerFilter] = useState('');
   const [siteFilter, setSiteFilter] = useState('');
+  const [selectedReportType, setSelectedReportType] = useState('All Reports');
 
   // Filter the Maintenance data
   const filteredMaintenanceData = reportsData.filter(item => {
@@ -40,7 +41,9 @@ export const ReportsAnalyticsHubView: React.FC<ReportsAnalyticsHubViewProps> = (
                           item.customer.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCustomer = customerFilter ? item.customer === customerFilter : true;
     const matchesSite = siteFilter ? item.site === siteFilter : true;
-    return matchesSearch && matchesCustomer && matchesSite;
+    const matchesType = selectedReportType === 'Breakdown Report' ? item.maintenanceType === 'Breakdown' :
+                        selectedReportType === 'Maintenance Due Report' ? item.status === 'Overdue' || item.status === 'Active' : true;
+    return matchesSearch && matchesCustomer && matchesSite && matchesType;
   });
 
   // Filter Equipment data
@@ -117,10 +120,45 @@ export const ReportsAnalyticsHubView: React.FC<ReportsAnalyticsHubViewProps> = (
         
         {/* Dynamic Filtering Engine */}
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+          {/* SOW 2.11 Report Type Preset Selector */}
+          <select 
+            className="form-input py-1.5 text-sm font-semibold text-primary bg-emerald-50/50 border-emerald-300 w-52"
+            value={selectedReportType}
+            onChange={(e) => setSelectedReportType(e.target.value)}
+          >
+            <option value="All Reports">📋 All {activeCategory} Reports</option>
+            {activeCategory === 'Equipment' && (
+              <>
+                <option value="Equipment Register">Equipment Register</option>
+                <option value="Equipment Status Report">Equipment Status Report</option>
+                <option value="Equipment Location Report">Equipment Location Report</option>
+              </>
+            )}
+            {activeCategory === 'Maintenance' && (
+              <>
+                <option value="Maintenance History">Maintenance History</option>
+                <option value="Maintenance Due Report">Maintenance Due Report</option>
+                <option value="Breakdown Report">Breakdown Report</option>
+                <option value="Workshop Activity Report">Workshop Activity Report</option>
+                <option value="Maintenance by Customer">Maintenance by Customer</option>
+                <option value="Maintenance by Site">Maintenance by Site</option>
+                <option value="Maintenance by Equipment">Maintenance by Equipment</option>
+              </>
+            )}
+            {activeCategory === 'Spare Parts' && (
+              <>
+                <option value="Parts Consumption">Parts Consumption Report</option>
+                <option value="Parts Usage by Equipment">Parts Usage by Equipment</option>
+                <option value="Parts Usage by Customer">Parts Usage by Customer</option>
+                <option value="Serial Number Traceability">Serial Number Traceability</option>
+              </>
+            )}
+          </select>
+
           <div className="relative">
             <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <select 
-              className="form-input pl-8 py-1.5 text-sm font-medium w-40"
+              className="form-input pl-8 py-1.5 text-sm font-medium w-36"
               value={filters.datePreset}
               onChange={e => setFilters({...filters, datePreset: e.target.value as any})}
             >
@@ -132,7 +170,7 @@ export const ReportsAnalyticsHubView: React.FC<ReportsAnalyticsHubViewProps> = (
           </div>
 
           <select 
-            className="form-input py-1.5 text-sm w-40"
+            className="form-input py-1.5 text-sm w-36"
             value={customerFilter}
             onChange={(e) => setCustomerFilter(e.target.value)}
           >
@@ -141,7 +179,7 @@ export const ReportsAnalyticsHubView: React.FC<ReportsAnalyticsHubViewProps> = (
           </select>
 
           <select 
-            className="form-input py-1.5 text-sm w-40"
+            className="form-input py-1.5 text-sm w-36"
             value={siteFilter}
             onChange={(e) => setSiteFilter(e.target.value)}
           >
