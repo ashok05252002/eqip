@@ -5,11 +5,9 @@ import {
   Clock, 
   Package, 
   FileText, 
-  Download, 
   Printer,
   ChevronDown,
   List,
-  Image as ImageIcon,
   Calendar,
   UploadCloud,
   CheckCircle2 as CheckCircle
@@ -171,7 +169,7 @@ export const MaintenanceJobDetailView: React.FC<MaintenanceJobDetailViewProps> =
           </div>
         </div>
 
-        {/* Right Column: Documents & Vault */}
+        {/* Right Column: Document Uploader */}
         <div className="col-span-12 lg:col-span-4 flex flex-col gap-6">
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden slide-in-right" style={{ animationDelay: '0.1s' }}>
             <div className="border-b border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-900/50">
@@ -199,36 +197,7 @@ export const MaintenanceJobDetailView: React.FC<MaintenanceJobDetailViewProps> =
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden slide-in-right" style={{ animationDelay: '0.2s' }}>
-            <div className="border-b border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-900/50">
-              <h2 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
-                <FileText size={18} className="text-primary" />
-                Document Vault
-              </h2>
-            </div>
-            <div className="p-4 flex flex-col gap-3">
-              {[
-                { name: 'Initial Inspection Photos.zip', type: 'Photo Evidence', icon: <ImageIcon size={20} className="text-blue-500" /> },
-                { name: 'Pressure Test Graph.pdf', type: 'Inspection Certificate', icon: <FileText size={20} className="text-red-500" /> },
-                { name: 'Signed Service Report.pdf', type: 'Service Report', icon: <FileText size={20} className="text-green-500" /> }
-              ].map((doc, i) => (
-                <div key={i} className="flex items-center justify-between p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-primary/50 transition-colors group">
-                  <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded-lg shrink-0">
-                      {doc.icon}
-                    </div>
-                    <div className="truncate">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">{doc.name}</p>
-                      <p className="text-xs text-slate-500">{doc.type}</p>
-                    </div>
-                  </div>
-                  <button className="btn-icon-only opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Download size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
+
         </div>
       </div>
 

@@ -4,15 +4,13 @@ import {
   MapPin, 
   Clock, 
   Settings, 
-  FileText, 
   Package, 
-  Download,
   AlertCircle,
   ShieldCheck,
   Calendar,
   Wrench
 } from 'lucide-react';
-import { initialEquipment, mockServiceHistory, mockPartUsageRecords, mockDocuments } from '../data/mockData';
+import { initialEquipment, mockServiceHistory, mockPartUsageRecords } from '../data/mockData';
 
 interface EquipmentProfileViewProps {
   equipmentId: string;
@@ -20,7 +18,7 @@ interface EquipmentProfileViewProps {
 }
 
 export const EquipmentProfileView: React.FC<EquipmentProfileViewProps> = ({ equipmentId, onBack }) => {
-  const [activeTab, setActiveTab] = useState<'specs' | 'service' | 'parts' | 'docs'>('specs');
+  const [activeTab, setActiveTab] = useState<'specs' | 'service' | 'parts'>('specs');
   
   // Find the equipment details
   const equipment = initialEquipment.find(eq => eq.id === equipmentId);
@@ -144,12 +142,7 @@ export const EquipmentProfileView: React.FC<EquipmentProfileViewProps> = ({ equi
           >
             <Package size={18} /> Spare Parts History
           </button>
-          <button 
-            className={`profile-tab ${activeTab === 'docs' ? 'active' : ''}`}
-            onClick={() => setActiveTab('docs')}
-          >
-            <FileText size={18} /> Document Vault
-          </button>
+
         </div>
 
         <div className="profile-tab-content">
@@ -306,26 +299,7 @@ export const EquipmentProfileView: React.FC<EquipmentProfileViewProps> = ({ equi
             </div>
           )}
 
-          {activeTab === 'docs' && (
-            <div className="docs-grid fade-in">
-              {mockDocuments.map(doc => (
-                <div key={doc.id} className="doc-card">
-                  <div className="doc-icon-area">
-                    {doc.type === 'PDF' && <FileText size={32} className="text-red-400" />}
-                    {doc.type === 'Image' && <FileText size={32} className="text-blue-400" />}
-                    {doc.type === 'Certificate' && <FileText size={32} className="text-emerald-400" />}
-                  </div>
-                  <div className="doc-info-area">
-                    <h4 className="doc-title">{doc.title}</h4>
-                    <p className="doc-meta">{doc.type} • Added {doc.dateAdded}</p>
-                  </div>
-                  <button className="doc-download-btn">
-                    <Download size={18} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+
         </div>
       </div>
     </div>

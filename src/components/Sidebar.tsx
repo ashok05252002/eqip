@@ -6,7 +6,6 @@ import {
   Hammer,
   Boxes,
   Calendar,
-  FileText,
   BarChart3,
   ChevronLeft,
   ChevronRight,
@@ -37,7 +36,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { name: 'Maintenance Jobs', icon: Hammer },
     { name: 'Spare Parts Inventory', icon: Boxes },
     { name: 'PM Schedules', icon: Calendar },
-    { name: 'Document Vault', icon: FileText },
     { name: 'Analytics & Reports', icon: BarChart3 },
   ];
 

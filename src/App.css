@@ -1079,7 +1079,7 @@
   gap: 8px;
 }
 
-/* Document Vault / Upload Zone */
+/* Document Upload Zone */
 .drag-drop-zone {
   border: 2px dashed var(--slate-300);
   transition: all var(--transition-fast);
