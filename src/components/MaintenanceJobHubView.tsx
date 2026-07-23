@@ -163,10 +163,16 @@ export const MaintenanceJobHubView: React.FC<MaintenanceJobHubViewProps> = ({ jo
                           <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{job.assigneeName}</span>
                         </div>
                         {job.status === 'Completed' ? (
-                          <CheckCircle2 size={16} className="text-green-500" />
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] font-mono font-bold text-emerald-600">100%</span>
+                            <CheckCircle2 size={16} className="text-emerald-500" />
+                          </div>
                         ) : (
-                          <div style={{ width: '64px', height: '6px', backgroundColor: 'var(--slate-100)', borderRadius: '999px', overflow: 'hidden' }}>
-                            <div style={{ height: '100%', backgroundColor: 'var(--primary)', width: `${job.progress}%` }}></div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">{job.progress || 0}%</span>
+                            <div style={{ width: '48px', height: '6px', backgroundColor: 'var(--slate-200)', borderRadius: '999px', overflow: 'hidden' }}>
+                              <div style={{ height: '100%', backgroundColor: '#10B981', width: `${job.progress || 0}%` }}></div>
+                            </div>
                           </div>
                         )}
                       </div>

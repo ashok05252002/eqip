@@ -23,9 +23,12 @@ export const ReceivingWizardModal: React.FC<ReceivingWizardModalProps> = ({ onCl
   };
 
   return (
-    <>
-      <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 fade-in" onClick={onClose} />
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-white dark:bg-slate-900 rounded-xl shadow-2xl z-50 fade-in" style={{ display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}>
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 fade-in overflow-y-auto" onClick={onClose}>
+      <div 
+        className="w-full max-w-3xl bg-white dark:bg-slate-900 rounded-xl shadow-2xl z-50 flex flex-col my-auto" 
+        style={{ maxHeight: '90vh' }}
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-900 rounded-t-xl">
@@ -243,6 +246,6 @@ export const ReceivingWizardModal: React.FC<ReceivingWizardModalProps> = ({ onCl
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

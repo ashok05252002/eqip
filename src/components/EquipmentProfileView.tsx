@@ -8,20 +8,49 @@ import {
   AlertCircle,
   ShieldCheck,
   Calendar,
-  Wrench
+  Wrench,
+  Send,
+  Building,
+  History
 } from 'lucide-react';
+import type { DeploymentRecord } from '../types';
 import { initialEquipment, mockServiceHistory, mockPartUsageRecords } from '../data/mockData';
+import { DispatchEquipmentModal } from './DispatchEquipmentModal';
 
 interface EquipmentProfileViewProps {
   equipmentId: string;
   onBack: () => void;
+  onOpenReceivingModal?: (equipmentId?: string) => void;
+  onDispatchEquipment?: (equipmentId: string, customer: string, site: string, location: string, record: DeploymentRecord) => void;
 }
 
-export const EquipmentProfileView: React.FC<EquipmentProfileViewProps> = ({ equipmentId, onBack }) => {
-  const [activeTab, setActiveTab] = useState<'specs' | 'service' | 'parts'>('specs');
+export const EquipmentProfileView: React.FC<EquipmentProfileViewProps> = ({ 
+  equipmentId, 
+  onBack,
+  onOpenReceivingModal,
+  onDispatchEquipment
+}) => {
+  const [activeTab, setActiveTab] = useState<'specs' | 'service' | 'parts' | 'history'>('specs');
+  const [isDispatchModalOpen, setIsDispatchModalOpen] = useState(false);
   
   // Find the equipment details
   const equipment = initialEquipment.find(eq => eq.id === equipmentId);
+
+  const [deploymentHistory, setDeploymentHistory] = useState<DeploymentRecord[]>(
+    equipment?.deploymentHistory || [
+      {
+        id: 'dep-init',
+        type: 'Dispatch to Customer Site',
+        date: equipment?.purchaseDate || '2024-01-15',
+        customer: equipment?.customer || 'Aramco',
+        site: equipment?.site || 'Offshore Rig 4',
+        location: equipment?.currentLocation || 'Rig Platform A',
+        meterReading: equipment?.operatingHours || 14500,
+        recordedBy: 'Senior Logistics Engineer',
+        notes: 'Initial commissioning and site deployment.'
+      }
+    ]
+  );
 
   if (!equipment) {
     return (
@@ -74,9 +103,20 @@ export const EquipmentProfileView: React.FC<EquipmentProfileViewProps> = ({ equi
             </div>
           </div>
         </div>
-        <div className="profile-banner-right">
-          <button className="btn-primary" style={{ backgroundColor: '#10B981', color: 'white' }}>
-            Receive at Workshop
+        <div className="profile-banner-right flex items-center gap-3">
+          <button 
+            className="btn-primary flex items-center gap-2" 
+            style={{ backgroundColor: '#10B981', color: 'white', borderColor: '#10B981' }}
+            onClick={() => onOpenReceivingModal ? onOpenReceivingModal(equipment.id) : alert('Open Workshop Receiving')}
+          >
+            <Wrench size={16} /> Receive at Workshop
+          </button>
+          <button 
+            className="btn-primary flex items-center gap-2" 
+            style={{ backgroundColor: '#2563EB', color: 'white', borderColor: '#2563EB' }}
+            onClick={() => setIsDispatchModalOpen(true)}
+          >
+            <Send size={16} /> Dispatch to Customer Site
           </button>
         </div>
       </div>
@@ -141,6 +181,12 @@ export const EquipmentProfileView: React.FC<EquipmentProfileViewProps> = ({ equi
             onClick={() => setActiveTab('parts')}
           >
             <Package size={18} /> Spare Parts History
+          </button>
+          <button 
+            className={`profile-tab ${activeTab === 'history' ? 'active' : ''}`}
+            onClick={() => setActiveTab('history')}
+          >
+            <MapPin size={18} /> Deployment & Site History
           </button>
 
         </div>
@@ -300,8 +346,86 @@ export const EquipmentProfileView: React.FC<EquipmentProfileViewProps> = ({ equi
           )}
 
 
+          {activeTab === 'history' && (
+            <div className="history-timeline-container p-6 fade-in flex flex-col gap-6">
+              <div className="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-700">
+                <div>
+                  <h3 className="font-bold text-slate-800 dark:text-slate-100 text-lg flex items-center gap-2">
+                    <History size={20} className="text-blue-500" />
+                    Custody & Movement Journey
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">Historical log of customer deployments, site transfers, and workshop intakes.</p>
+                </div>
+                <button 
+                  className="btn-secondary text-xs flex items-center gap-2"
+                  onClick={() => setIsDispatchModalOpen(true)}
+                >
+                  <Send size={14} /> New Site Dispatch
+                </button>
+              </div>
+
+              <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-700">
+                {deploymentHistory.map((rec) => (
+                  <div key={rec.id} className="relative group">
+                    <div className="absolute -left-6 top-1 w-4 h-4 rounded-full bg-blue-500 border-2 border-white dark:border-slate-900 group-hover:scale-125 transition-transform" />
+                    <div className="bg-slate-50 dark:bg-slate-800/80 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2 shadow-sm">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-2">
+                          <span className={`badge text-xs font-semibold ${
+                            rec.type === 'Dispatch to Customer Site' ? 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300' :
+                            rec.type === 'Intake to Workshop' ? 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-300' :
+                            'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300'
+                          }`}>
+                            {rec.type}
+                          </span>
+                          <span className="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center gap-1">
+                            <Building size={14} className="text-slate-400" /> {rec.customer}
+                          </span>
+                        </div>
+                        <span className="text-xs text-slate-500 font-mono">{rec.date}</span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 text-xs">
+                        <div>
+                          <span className="text-slate-400 block">Site Location</span>
+                          <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1 mt-0.5">
+                            <MapPin size={12} className="text-red-400" /> {rec.site} ({rec.location})
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block">Meter Reading</span>
+                          <span className="font-mono font-bold text-slate-700 dark:text-slate-300 mt-0.5 block">{rec.meterReading?.toLocaleString()} hrs</span>
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-slate-100 dark:border-slate-800">
+                        {rec.notes}
+                      </p>
+
+                      <div className="text-[10px] text-slate-400 text-right pt-1">
+                        Authorized by: <span className="font-semibold text-slate-500">{rec.recordedBy}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
+
+      <DispatchEquipmentModal
+        isOpen={isDispatchModalOpen}
+        onClose={() => setIsDispatchModalOpen(false)}
+        equipment={equipment}
+        onDispatch={(id, cust, site, loc, record) => {
+          setDeploymentHistory(prev => [record, ...prev]);
+          if (onDispatchEquipment) {
+            onDispatchEquipment(id, cust, site, loc, record);
+          }
+        }}
+      />
     </div>
   );
 };

@@ -27,7 +27,31 @@ export const initialEquipment: Equipment[] = [
     operatingHours: 14500,
     daysSinceService: 45,
     activeJobsCount: 1,
-    lifetimePartsReplaced: 12
+    lifetimePartsReplaced: 12,
+    deploymentHistory: [
+      {
+        id: 'dep-101',
+        type: 'Intake to Workshop',
+        date: '2026-06-01',
+        customer: 'Aramco',
+        site: 'Central Workshop Bay 2',
+        location: 'Dammam Workshop Facility',
+        meterReading: 14200,
+        recordedBy: 'Ahmed Al-Sayed',
+        notes: 'Received for scheduled 500h preventive maintenance & seal replacement.'
+      },
+      {
+        id: 'dep-100',
+        type: 'Dispatch to Customer Site',
+        date: '2025-11-15',
+        customer: 'Aramco',
+        site: 'Offshore Platform B',
+        location: 'Arabian Gulf Block 4',
+        meterReading: 11000,
+        recordedBy: 'Michael Vance',
+        notes: 'Dispatched following complete workshop overhaul & hydro-test certification.'
+      }
+    ]
   },
   {
     id: 'eq-2',
@@ -55,7 +79,20 @@ export const initialEquipment: Equipment[] = [
     operatingHours: 8500,
     daysSinceService: 12,
     activeJobsCount: 2,
-    lifetimePartsReplaced: 8
+    lifetimePartsReplaced: 8,
+    deploymentHistory: [
+      {
+        id: 'dep-201',
+        type: 'Intake to Workshop',
+        date: '2026-07-10',
+        customer: 'ExxonMobil',
+        site: 'Gulf Coast Central Workshop',
+        location: 'Workshop Bay 3',
+        meterReading: 8500,
+        recordedBy: 'Sarah Jenkins',
+        notes: 'Received from Permian Rig 4 due to main brake disc wear.'
+      }
+    ]
   },
   {
     id: 'eq-3',

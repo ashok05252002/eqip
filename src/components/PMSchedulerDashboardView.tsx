@@ -8,16 +8,20 @@ import {
   Plus,
   Calendar,
   Clock,
-  Gauge
+  Gauge,
+  CheckCircle2
 } from 'lucide-react';
+import { RecordPMActivityModal } from './RecordPMActivityModal';
 
 interface PMSchedulerDashboardViewProps {
   schedules: PMScheduleRule[];
   onCreateNew: () => void;
+  onRecordCompletion?: (scheduleId: string, newMetricValue: number | string, notes: string, engineer: string) => void;
 }
 
-export const PMSchedulerDashboardView: React.FC<PMSchedulerDashboardViewProps> = ({ schedules, onCreateNew }) => {
+export const PMSchedulerDashboardView: React.FC<PMSchedulerDashboardViewProps> = ({ schedules, onCreateNew, onRecordCompletion }) => {
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [selectedScheduleForRecord, setSelectedScheduleForRecord] = useState<PMScheduleRule | null>(null);
 
   const activeCount = schedules.length;
   const upcomingCount = schedules.filter(s => s.status === 'Upcoming Due').length;
@@ -160,9 +164,15 @@ export const PMSchedulerDashboardView: React.FC<PMSchedulerDashboardViewProps> =
                         </span>
                       </td>
                       <td>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end items-center gap-2">
+                          <button 
+                            className="btn-primary text-xs py-1 px-3 flex items-center gap-1.5 shadow-sm"
+                            style={{ backgroundColor: '#10B981', borderColor: '#10B981', color: 'white' }}
+                            onClick={() => setSelectedScheduleForRecord(schedule)}
+                          >
+                            <CheckCircle2 size={13} /> Record Service
+                          </button>
                           <button className="btn-secondary text-xs py-1">View Log</button>
-                          <button className="btn-secondary text-xs py-1 hover:border-primary hover:text-primary transition-colors">Edit</button>
                         </div>
                       </td>
                     </tr>
@@ -180,6 +190,18 @@ export const PMSchedulerDashboardView: React.FC<PMSchedulerDashboardViewProps> =
         )}
       </div>
 
+      {selectedScheduleForRecord && (
+        <RecordPMActivityModal
+          isOpen={!!selectedScheduleForRecord}
+          onClose={() => setSelectedScheduleForRecord(null)}
+          schedule={selectedScheduleForRecord}
+          onRecordCompletion={(id, metricVal, notes, engineer) => {
+            if (onRecordCompletion) {
+              onRecordCompletion(id, metricVal, notes, engineer);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

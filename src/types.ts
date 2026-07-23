@@ -1,3 +1,15 @@
+export interface DeploymentRecord {
+  id: string;
+  type: 'Intake to Workshop' | 'Dispatch to Customer Site' | 'Site Transfer';
+  date: string;
+  customer: string;
+  site: string;
+  location: string;
+  meterReading: number;
+  recordedBy: string;
+  notes: string;
+}
+
 export interface Equipment {
   id: string;
   assetNumber: string;
@@ -25,6 +37,7 @@ export interface Equipment {
   daysSinceService?: number;
   activeJobsCount?: number;
   lifetimePartsReplaced?: number;
+  deploymentHistory?: DeploymentRecord[];
 }
 
 export interface ServiceRecord {
@@ -51,6 +64,16 @@ export interface DocumentRecord {
   dateAdded: string;
 }
 
+export interface ProgressLogEntry {
+  id: string;
+  timestamp: string;
+  progress: number;
+  status: 'Open' | 'In Progress' | 'Waiting for Parts' | 'Under Inspection' | 'Completed';
+  stage: string;
+  notes: string;
+  engineerName: string;
+}
+
 export interface MaintenanceJob {
   id: string;
   title: string;
@@ -66,6 +89,7 @@ export interface MaintenanceJob {
   createdAt: string;
   description: string;
   partsRequired: string[];
+  progressLogs?: ProgressLogEntry[];
 }
 
 export interface ActivityLog {

@@ -71,8 +71,8 @@ export const EquipmentMasterView: React.FC<EquipmentMasterViewProps> = ({ equipm
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="All">All Statuses</option>
-              <option value="Operational">Operational</option>
-              <option value="In Workshop">In Workshop</option>
+              <option value="Operational">Operational (At Customer Site)</option>
+              <option value="In Workshop">In Workshop (Collected Queue)</option>
               <option value="Under Maintenance">Under Maintenance</option>
               <option value="Decommissioned">Decommissioned</option>
             </select>

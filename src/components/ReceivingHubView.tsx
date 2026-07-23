@@ -1,15 +1,39 @@
 import React, { useState } from 'react';
-import type { IntakeRecord } from '../types';
-import { Plus, ClipboardCheck, Clock, FileText, Image, Hammer } from 'lucide-react';
+import type { IntakeRecord, DeploymentRecord, Equipment } from '../types';
+import { Plus, ClipboardCheck, Clock, FileText, Image, Hammer, Send } from 'lucide-react';
 import { ReceivingWizardModal } from './ReceivingWizardModal';
+import { DispatchEquipmentModal } from './DispatchEquipmentModal';
+import { initialEquipment } from '../data/mockData';
 
 interface ReceivingHubViewProps {
   intakeRecords: IntakeRecord[];
   onGenerateReceipt: (jobRef: string) => void;
+  onDispatchEquipment?: (equipmentId: string, customer: string, site: string, location: string, record: DeploymentRecord) => void;
 }
 
-export const ReceivingHubView: React.FC<ReceivingHubViewProps> = ({ intakeRecords, onGenerateReceipt }) => {
+export const ReceivingHubView: React.FC<ReceivingHubViewProps> = ({ intakeRecords, onGenerateReceipt, onDispatchEquipment }) => {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
+  const [selectedEquipmentForDispatch, setSelectedEquipmentForDispatch] = useState<Equipment | null>(null);
+
+  const handleOpenDispatch = (equipmentId: string) => {
+    const eq = initialEquipment.find(e => e.id === equipmentId) || {
+      id: equipmentId,
+      assetNumber: `AST-${equipmentId.toUpperCase()}`,
+      name: `Equipment ${equipmentId}`,
+      serialNumber: `SN-${equipmentId}`,
+      category: 'Oilfield Machinery',
+      type: 'Drilling System',
+      status: 'In Workshop',
+      site: 'Central Workshop',
+      currentLocation: 'Workshop Storage Bay',
+      lastInspection: new Date().toISOString().split('T')[0],
+      nextPM: '2026-09-01',
+      healthScore: 85,
+      model: 'Standard Model',
+      manufacturer: 'NOV'
+    };
+    setSelectedEquipmentForDispatch(eq);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -106,6 +130,13 @@ export const ReceivingHubView: React.FC<ReceivingHubViewProps> = ({ intakeRecord
                   </td>
                   <td className="text-right">
                     <div className="action-buttons">
+                      <button 
+                        className="btn-icon-only text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30" 
+                        title="Dispatch / Reassign to Customer" 
+                        onClick={() => handleOpenDispatch(record.equipmentId)}
+                      >
+                        <Send size={16} />
+                      </button>
                       <button className="btn-icon-only" title="View Intake Receipt" onClick={() => onGenerateReceipt(record.jobRef)}>
                         <FileText size={16} />
                       </button>
@@ -131,6 +162,19 @@ export const ReceivingHubView: React.FC<ReceivingHubViewProps> = ({ intakeRecord
           onSubmit={(jobRef) => {
             setIsWizardOpen(false);
             onGenerateReceipt(jobRef);
+          }}
+        />
+      )}
+
+      {selectedEquipmentForDispatch && (
+        <DispatchEquipmentModal 
+          isOpen={!!selectedEquipmentForDispatch}
+          onClose={() => setSelectedEquipmentForDispatch(null)}
+          equipment={selectedEquipmentForDispatch}
+          onDispatch={(id, cust, site, loc, record) => {
+            if (onDispatchEquipment) {
+              onDispatchEquipment(id, cust, site, loc, record);
+            }
           }}
         />
       )}

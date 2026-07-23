@@ -44,9 +44,9 @@ function App() {
   });
 
   // State arrays for Dashboard telemetry
-  const [equipment] = useState<Equipment[]>(initialEquipment);
+  const [equipment, setEquipment] = useState<Equipment[]>(initialEquipment);
   const [jobs, setJobs] = useState<MaintenanceJob[]>(initialJobs);
-  const [logs] = useState<ActivityLog[]>(initialLogs);
+  const [logs, setLogs] = useState<ActivityLog[]>(initialLogs);
   const [intakeRecords] = useState<IntakeRecord[]>(mockIntakeRecords);
   const [parts, setParts] = useState<SparePart[]>(initialParts);
   const [pmRules, setPmRules] = useState<PMScheduleRule[]>(mockPMRules);
@@ -123,6 +123,30 @@ function App() {
           <EquipmentProfileView 
             equipmentId={selectedEquipmentId}
             onBack={() => setCurrentView('equipment')}
+            onOpenReceivingModal={() => {
+              setCurrentView('receiving');
+            }}
+            onDispatchEquipment={(id, customer, site, location, record) => {
+              setEquipment(prev => prev.map(eq => eq.id === id ? {
+                ...eq,
+                status: 'Operational',
+                customer,
+                site,
+                currentLocation: location,
+                deploymentHistory: [record, ...(eq.deploymentHistory || [])]
+              } : eq));
+
+              setLogs(prev => [
+                {
+                  id: `act-${Date.now()}`,
+                  description: `Dispatched ${id.toUpperCase()} to ${customer} (${site})`,
+                  timestamp: 'Just now',
+                  type: 'info',
+                  category: 'Intake'
+                },
+                ...prev
+              ]);
+            }}
           />
         )}
 
@@ -132,6 +156,27 @@ function App() {
             onGenerateReceipt={(jobRef) => {
               setRecentJobRef(jobRef);
               setCurrentView('receiving-receipt');
+            }}
+            onDispatchEquipment={(id, customer, site, location, record) => {
+              setEquipment(prev => prev.map(eq => eq.id === id ? {
+                ...eq,
+                status: 'Operational',
+                customer,
+                site,
+                currentLocation: location,
+                deploymentHistory: [record, ...(eq.deploymentHistory || [])]
+              } : eq));
+
+              setLogs(prev => [
+                {
+                  id: `act-${Date.now()}`,
+                  description: `Dispatched received asset ${id.toUpperCase()} to ${customer} (${site})`,
+                  timestamp: 'Just now',
+                  type: 'info',
+                  category: 'Intake'
+                },
+                ...prev
+              ]);
             }}
           />
         )}
@@ -162,6 +207,14 @@ function App() {
             onUpdateStatus={(jobId, newStatus) => {
               setJobs(prev => prev.map(j => j.id === jobId ? { ...j, status: newStatus } : j));
             }}
+            onSaveProgress={(jobId, newProgress, newStatus, newLog) => {
+              setJobs(prev => prev.map(j => j.id === jobId ? { 
+                ...j, 
+                progress: newProgress, 
+                status: newStatus,
+                progressLogs: [newLog, ...(j.progressLogs || [])]
+              } : j));
+            }}
             onConsumePart={(partId, qty) => {
               setParts(prev => prev.map(p => p.id === partId ? { ...p, stockQty: p.stockQty - qty } : p));
             }}
@@ -176,6 +229,40 @@ function App() {
           <PMSchedulerDashboardView 
             schedules={pmRules}
             onCreateNew={() => setIsCreatePMModalOpen(true)}
+            onRecordCompletion={(scheduleId, newMetricValue, notes, engineer) => {
+              setPmRules(prev => prev.map(rule => {
+                if (rule.id === scheduleId) {
+                  let nextDue: number | string = newMetricValue;
+                  if (rule.triggerType === 'Hours' && typeof newMetricValue === 'number') {
+                    nextDue = newMetricValue + rule.intervalValue;
+                  } else if (rule.triggerType === 'Kilometers' && typeof newMetricValue === 'number') {
+                    nextDue = newMetricValue + rule.intervalValue;
+                  } else if (rule.triggerType === 'Calendar') {
+                    const d = new Date();
+                    d.setDate(d.getDate() + rule.intervalValue);
+                    nextDue = d.toISOString().split('T')[0];
+                  }
+                  return {
+                    ...rule,
+                    status: 'On Schedule',
+                    lastServicedMetric: newMetricValue,
+                    nextDueMetric: nextDue
+                  };
+                }
+                return rule;
+              }));
+              
+              setLogs(prev => [
+                {
+                  id: `act-${Date.now()}`,
+                  description: `PM Servicing Completed by ${engineer}: ${notes}`,
+                  timestamp: 'Just now',
+                  type: 'success',
+                  category: 'PM'
+                },
+                ...prev
+              ]);
+            }}
           />
         )}
 
